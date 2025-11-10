@@ -1,0 +1,6 @@
+selenium>=4.15.0
+plyer>=2.1.0
+schedule>=1.2.0
+flask>=2.3.0
+requests>=2.31.0
+beautifulsoup4>=4.12.0

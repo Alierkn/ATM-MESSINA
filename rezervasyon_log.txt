@@ -1,0 +1,42 @@
+2025-11-10 16:34:52,042 - INFO - Driver başarıyla başlatıldı
+2025-11-10 16:34:52,047 - INFO - Rezervasyon sayfasına gidiliyor: https://antonello.unime.it/prenotazione-postazione-biblioteca/?formid=28
+2025-11-10 16:34:57,331 - INFO - Form dolduruluyor...
+2025-11-10 16:34:57,913 - INFO - ✅ İsim girildi
+2025-11-10 16:36:41,188 - ERROR - ❌ Form doldurma hatası: Message: Element bulunamadı. Denenen stratejiler: [('xpath', "//select[contains(@class, 'tipologia')]"), ('xpath', "//select[@name='tipologia' or @id='tipologia']"), ('xpath', "//select[contains(@id, 'sala') or contains(@name, 'sala')]"), ('id', 'tipologia'), ('name', 'tipologia')]; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#nosuchelementexception
+
+2025-11-10 16:36:42,294 - INFO - Screenshot kaydedildi: screenshot_20251110_163641.png
+2025-11-10 16:36:42,295 - ERROR - 🔍 Element bulunamadı: Message: Element bulunamadı. Denenen stratejiler: [('xpath', "//select[contains(@class, 'tipologia')]"), ('xpath', "//select[@name='tipologia' or @id='tipologia']"), ('xpath', "//select[contains(@id, 'sala') or contains(@name, 'sala')]"), ('id', 'tipologia'), ('name', 'tipologia')]; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#nosuchelementexception
+
+2025-11-10 16:36:42,391 - INFO - Screenshot kaydedildi: screenshot_20251110_163642.png
+2025-11-10 16:36:42,465 - INFO - Bildirim: Hata! - Element bulunamadı: Message: Element bulunamadı. Denenen stratejiler: [('xpath', "//select[contains(@class, 'tipologia')]"), ('xpath', "//select[@name='tipologia' or @id='tipologia']"), ('xpath', "//select[contains(@id, 'sala') or contains(@name, 'sala')]"), ('id', 'tipologia'), ('name', 'tipologia')]; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#nosuchelementexception
+
+2025-11-10 16:36:43,859 - INFO - Driver kapatıldı
+2025-11-10 16:39:49,475 - INFO - Driver başarıyla başlatıldı
+2025-11-10 16:39:49,478 - INFO - Rezervasyon sayfasına gidiliyor: https://antonello.unime.it/prenotazione-postazione-biblioteca/?formid=28
+2025-11-10 16:39:54,503 - INFO - Form dolduruluyor...
+2025-11-10 16:39:55,035 - INFO - ✅ İsim girildi
+2025-11-10 16:39:55,586 - INFO - ✅ Salon tipi seçildi: Sala Lettura -Rettorato
+2025-11-10 16:39:56,440 - INFO - ✅ Email girildi
+2025-11-10 16:39:57,288 - INFO - ✅ Matricola girildi
+2025-11-10 16:39:57,798 - INFO - Tarih seçiliyor...
+2025-11-10 16:40:48,876 - INFO - ✅ Müsait tarih seçildi: 10
+2025-11-10 16:41:20,569 - INFO - ✅ Saat seçildi: No more slots available.
+2025-11-10 16:41:22,075 - INFO - Checkboxlar işaretleniyor...
+2025-11-10 16:41:22,121 - INFO - ✅ İlk checkbox işaretlendi (fieldname3_1)
+2025-11-10 16:41:22,461 - INFO - ✅ İkinci checkbox işaretlendi (fieldname6_1)
+2025-11-10 16:41:23,779 - INFO - Rezervasyon gönderiliyor...
+2025-11-10 16:42:08,761 - INFO - ✅ Rezervasyon gönderildi
+2025-11-10 16:42:13,813 - WARNING - ❌ Hata mesajı bulundu: error
+2025-11-10 16:42:13,814 - WARNING - ⚠️ Rezervasyon başarısız oldu - başarı mesajı bulunamadı
+2025-11-10 16:42:14,030 - INFO - Screenshot kaydedildi: screenshot_20251110_164213.png
+2025-11-10 16:42:16,025 - INFO - Driver kapatıldı
+2025-11-10 16:51:51,740 - INFO - ============================================================
+2025-11-10 16:51:51,740 - INFO - İTALYA SAATİNE GÖRE ZAMANLANMIŞ REZERVASYON
+2025-11-10 16:51:51,740 - INFO - ============================================================
+2025-11-10 16:51:51,741 - INFO - Şu anki İtalya saati: 2025-11-10 16:51:51
+2025-11-10 16:51:51,741 - INFO - ✅ Zamanlayıcı eklendi: Her gün 00:00 (İtalya saati)
+2025-11-10 16:51:51,741 - INFO - ✅ Zamanlayıcı eklendi: Her gün 08:00 (İtalya saati)
+2025-11-10 16:51:51,741 - INFO - ============================================================
+2025-11-10 16:51:51,741 - INFO - Zamanlayıcılar aktif. Bot çalışmaya devam ediyor...
+2025-11-10 16:51:51,741 - INFO - Durdurmak için Ctrl+C basın
+2025-11-10 16:51:51,741 - INFO - ============================================================
