@@ -1,2 +1,2 @@
-web: python atm_messina_app.py
+web: gunicorn atm_messina_app:app
 
