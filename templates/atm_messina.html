@@ -25,6 +25,184 @@
             overflow-x: hidden;
         }
 
+        /* Mobil görünüm için responsive tasarım */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                max-width: 100%;
+            }
+
+            .header {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .header p {
+                font-size: 1em;
+            }
+
+            .controls {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+
+            .controls h2 {
+                font-size: 1.4em;
+                margin-bottom: 15px;
+            }
+
+            .form-group input {
+                padding: 12px;
+                font-size: 16px; /* iOS zoom önleme */
+            }
+
+            .btn {
+                padding: 14px 20px;
+                font-size: 1em;
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 10px;
+                display: block;
+            }
+
+            .duraklar-list {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .durak-card {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+
+            .durak-card h3 {
+                font-size: 1.2em;
+            }
+
+            .durak-card .actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .durak-card .actions .btn {
+                width: 100%;
+            }
+
+            .otobusler-container {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+
+            .otobusler-container h2 {
+                font-size: 1.8em;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .otobus-item {
+                padding: 15px;
+                border-radius: 15px;
+            }
+
+            .otobus-item h4 {
+                font-size: 1.2em;
+            }
+        }
+
+        /* Çok küçük ekranlar için */
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+
+            .header {
+                padding: 15px 10px;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .controls {
+                padding: 15px 10px;
+            }
+
+            .controls h2 {
+                font-size: 1.2em;
+            }
+
+            .btn {
+                padding: 12px 16px;
+                font-size: 0.95em;
+            }
+
+            .durak-card {
+                padding: 15px 10px;
+            }
+
+            .otobusler-container {
+                padding: 15px 10px;
+            }
+
+            .otobus-kart-mobil {
+                padding: 12px !important;
+            }
+
+            .otobus-kart-mobil .bus-icon {
+                font-size: 1.5em !important;
+            }
+
+            .otobus-kart-mobil strong {
+                font-size: 1.2em !important;
+            }
+
+            .saat-kutusu {
+                padding: 12px 15px !important;
+            }
+
+            .saat-kutusu div:last-child {
+                font-size: 1.5em !important;
+            }
+        }
+
+        /* Mobilde otobüs kartlarını dikey yap */
+        @media (max-width: 768px) {
+            .otobus-kart-mobil {
+                flex-direction: column !important;
+            }
+
+            .otobus-kart-mobil .saat-kutusu {
+                width: 100% !important;
+                min-width: auto !important;
+                margin-top: 10px;
+            }
+        }
+
+        /* Dokunmatik ekranlar için daha büyük tıklanabilir alanlar */
+        @media (hover: none) and (pointer: coarse) {
+            .btn {
+                min-height: 44px; /* iOS önerisi */
+                touch-action: manipulation;
+            }
+
+            .durak-card {
+                min-height: 44px;
+            }
+
+            .form-group input {
+                min-height: 44px;
+            }
+        }
+
         @keyframes gradientShift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -835,8 +1013,8 @@
                             const animClass = isTempoReale ? 'otobus-tempo-reale' : 'otobus-schedulato';
                             
                             html += `
-                                <div class="detay ${animClass}" style="display: flex; justify-content: space-between; align-items: center; padding: 20px; background: linear-gradient(135deg, #ffffff 0%, ${isTempoReale ? '#f0fff4' : '#fff5f5'} 100%); border-radius: 15px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 2px solid ${isTempoReale ? '#2ed573' : '#ffd93d'}; position: relative; overflow: hidden; transition: all 0.3s;">
-                                    <div style="flex: 1; position: relative; z-index: 1;">
+                                <div class="detay ${animClass} otobus-kart-mobil" style="display: flex; flex-direction: column; padding: 15px; background: linear-gradient(135deg, #ffffff 0%, ${isTempoReale ? '#f0fff4' : '#fff5f5'} 100%); border-radius: 15px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 2px solid ${isTempoReale ? '#2ed573' : '#ffd93d'}; position: relative; overflow: hidden; transition: all 0.3s;">
+                                    <div style="flex: 1; position: relative; z-index: 1; margin-bottom: 15px;">
                                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
                                             <span class="bus-icon" style="font-size: 2em;">${isTempoReale ? '🚌' : '🚏'}</span>
                                             <strong style="color: ${isTempoReale ? '#2ed573' : '#ff6b6b'}; font-size: 1.5em; font-weight: 700;">Hat ${otobus.hat || 'N/A'}</strong>
@@ -844,7 +1022,7 @@
                                         <div style="color: #555; margin: 8px 0; font-size: 1.1em; font-weight: 500;">📍 ${otobus.varis || 'Bilinmiyor'}</div>
                                         ${tipBadge}
                                     </div>
-                                    <div class="saat-kutusu" style="text-align: center; padding: 15px 20px; background: linear-gradient(135deg, ${isTempoReale ? '#2ed573' : '#ff6b6b'} 0%, ${isTempoReale ? '#1ecc5f' : '#ffa500'} 100%); border-radius: 15px; box-shadow: 0 5px 15px rgba(${isTempoReale ? '46, 213, 115' : '255, 107, 107'}, 0.3); position: relative; z-index: 1; min-width: 100px;">
+                                    <div class="saat-kutusu" style="text-align: center; padding: 15px 20px; background: linear-gradient(135deg, ${isTempoReale ? '#2ed573' : '#ff6b6b'} 0%, ${isTempoReale ? '#1ecc5f' : '#ffa500'} 100%); border-radius: 15px; box-shadow: 0 5px 15px rgba(${isTempoReale ? '46, 213, 115' : '255, 107, 107'}, 0.3); position: relative; z-index: 1; width: 100%;">
                                         <div style="font-size: 0.9em; color: rgba(255,255,255,0.9); margin-bottom: 5px; font-weight: 500;">${isTempoReale ? '🚌 Geliyor' : '⏰ Varış'}</div>
                                         <div style="font-size: 2em; font-weight: 700; color: white; text-shadow: 2px 2px 5px rgba(0,0,0,0.2);">${otobus.saat || 'N/A'}</div>
                                     </div>
