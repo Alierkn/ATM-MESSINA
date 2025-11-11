@@ -85,16 +85,36 @@ def load_duraklar() -> List[Dict]:
     if os.path.exists(DURAKLAR_FILE):
         try:
             with open(DURAKLAR_FILE, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except:
+                data = json.load(f)
+                # Eğer data bir liste değilse, boş liste döndür
+                if not isinstance(data, list):
+                    print(f"Uyarı: duraklar.json dosyası geçersiz format - liste bekleniyordu")
+                    return []
+                return data
+        except json.JSONDecodeError as e:
+            print(f"JSON parse hatası: {e}")
+            return []
+        except Exception as e:
+            print(f"Dosya okuma hatası: {e}")
             return []
     return []
 
 def save_duraklar(duraklar: List[Dict]):
     """Durak listesini kaydet"""
-    os.makedirs(os.path.dirname(DURAKLAR_FILE), exist_ok=True)
-    with open(DURAKLAR_FILE, 'w', encoding='utf-8') as f:
-        json.dump(duraklar, f, ensure_ascii=False, indent=2)
+    try:
+        os.makedirs(os.path.dirname(DURAKLAR_FILE), exist_ok=True)
+        # Atomic write: önce geçici dosyaya yaz, sonra taşı
+        temp_file = DURAKLAR_FILE + '.tmp'
+        with open(temp_file, 'w', encoding='utf-8') as f:
+            json.dump(duraklar, f, ensure_ascii=False, indent=2)
+            f.flush()
+            os.fsync(f.fileno())  # Disk'e yazıldığından emin ol
+        
+        # Geçici dosyayı asıl dosyaya taşı
+        os.replace(temp_file, DURAKLAR_FILE)
+    except Exception as e:
+        print(f"Dosya kaydetme hatası: {e}")
+        raise
 
 def fetch_durak_data(url: str) -> Dict:
     """
@@ -436,8 +456,16 @@ def add_durak():
         
         duraklar = load_duraklar()
         
+        # Yeni ID: Mevcut durakların en yüksek ID'sini bul ve +1 yap
+        # Eğer hiç durak yoksa 1'den başla
+        if duraklar:
+            max_id = max((d.get('id', 0) for d in duraklar), default=0)
+            yeni_id = max_id + 1
+        else:
+            yeni_id = 1
+        
         yeni_durak = {
-            'id': len(duraklar) + 1,
+            'id': yeni_id,
             'ad': data.get('ad', 'İsimsiz Durak'),
             'url': data.get('url', ''),
             'eklenme_tarihi': datetime.now().isoformat()
@@ -445,6 +473,11 @@ def add_durak():
         
         duraklar.append(yeni_durak)
         save_duraklar(duraklar)
+        
+        # Kaydetme işleminin başarılı olduğunu doğrula
+        kaydedilen_duraklar = load_duraklar()
+        if not any(d.get('id') == yeni_id for d in kaydedilen_duraklar):
+            raise Exception('Durak kaydedilemedi - dosya yazma hatası')
         
         response = jsonify(yeni_durak)
         response.headers['Content-Type'] = 'application/json; charset=utf-8'
