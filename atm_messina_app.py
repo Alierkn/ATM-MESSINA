@@ -24,20 +24,39 @@ CORS(app)
 @app.errorhandler(404)
 def not_found(error):
     if request.path.startswith('/api/'):
-        return jsonify({'success': False, 'error': 'Endpoint bulunamadı'}), 404
+        response = jsonify({'success': False, 'error': 'Endpoint bulunamadı'})
+        response.headers['Content-Type'] = 'application/json'
+        return response, 404
     return error
 
 @app.errorhandler(500)
 def internal_error(error):
     if request.path.startswith('/api/'):
-        return jsonify({'success': False, 'error': 'Sunucu hatası'}), 500
+        response = jsonify({'success': False, 'error': 'Sunucu hatası'})
+        response.headers['Content-Type'] = 'application/json'
+        return response, 500
     return error
 
 @app.errorhandler(Exception)
 def handle_exception(e):
     if request.path.startswith('/api/'):
-        return jsonify({'success': False, 'error': str(e)}), 500
+        response = jsonify({'success': False, 'error': str(e)})
+        response.headers['Content-Type'] = 'application/json'
+        return response, 500
     return e
+
+# Tüm API yanıtlarının JSON olduğundan emin ol
+@app.after_request
+def after_request(response):
+    if request.path.startswith('/api/'):
+        # Eğer Content-Type HTML ise, JSON'a çevir
+        if response.content_type and 'text/html' in response.content_type:
+            error_data = {'success': False, 'error': 'Beklenmeyen hata oluştu'}
+            response = jsonify(error_data)
+            response.status_code = 500
+        # Her zaman JSON Content-Type set et
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+    return response
 
 # Retry stratejisi ile session oluştur
 def create_session():
@@ -390,18 +409,30 @@ def get_duraklar():
     """Tüm durakları getir"""
     try:
         duraklar = load_duraklar()
-        return jsonify(duraklar)
+        response = jsonify(duraklar)
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        return response
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e), 'duraklar': []}), 500
+        response = jsonify({'success': False, 'error': str(e), 'duraklar': []})
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        return response, 500
 
 @app.route('/api/duraklar', methods=['POST'])
 def add_durak():
     """Yeni durak ekle"""
     try:
+        # Content-Type kontrolü
+        if not request.is_json:
+            response = jsonify({'success': False, 'error': 'Content-Type application/json olmalı'})
+            response.headers['Content-Type'] = 'application/json; charset=utf-8'
+            return response, 400
+        
         data = request.get_json() or {}
         
         if not data.get('ad') or not data.get('url'):
-            return jsonify({'success': False, 'error': 'Durak adı ve URL gerekli'}), 400
+            response = jsonify({'success': False, 'error': 'Durak adı ve URL gerekli'})
+            response.headers['Content-Type'] = 'application/json; charset=utf-8'
+            return response, 400
         
         duraklar = load_duraklar()
         
@@ -415,9 +446,13 @@ def add_durak():
         duraklar.append(yeni_durak)
         save_duraklar(duraklar)
         
-        return jsonify(yeni_durak), 201
+        response = jsonify(yeni_durak)
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        return response, 201
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        response = jsonify({'success': False, 'error': str(e)})
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        return response, 500
 
 @app.route('/api/duraklar/<int:durak_id>', methods=['DELETE'])
 def delete_durak(durak_id):
@@ -426,9 +461,13 @@ def delete_durak(durak_id):
         duraklar = load_duraklar()
         duraklar = [d for d in duraklar if d.get('id') != durak_id]
         save_duraklar(duraklar)
-        return jsonify({'success': True})
+        response = jsonify({'success': True})
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        return response
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        response = jsonify({'success': False, 'error': str(e)})
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        return response, 500
 
 @app.route('/api/duraklar/<int:durak_id>/veri', methods=['GET'])
 def get_durak_veri(durak_id):
@@ -438,19 +477,27 @@ def get_durak_veri(durak_id):
         durak = next((d for d in duraklar if d.get('id') == durak_id), None)
         
         if not durak:
-            return jsonify({'success': False, 'error': 'Durak bulunamadı'}), 404
+            response = jsonify({'success': False, 'error': 'Durak bulunamadı'})
+            response.headers['Content-Type'] = 'application/json; charset=utf-8'
+            return response, 404
         
         url = durak.get('url')
         if not url:
-            return jsonify({'success': False, 'error': 'Durak URL\'si yok'}), 400
+            response = jsonify({'success': False, 'error': 'Durak URL\'si yok'})
+            response.headers['Content-Type'] = 'application/json; charset=utf-8'
+            return response, 400
         
         veri = fetch_durak_data(url)
         veri['durak_adi'] = durak.get('ad', 'Bilinmeyen')
         veri['durak_id'] = durak_id
         
-        return jsonify(veri)
+        response = jsonify(veri)
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        return response
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        response = jsonify({'success': False, 'error': str(e)})
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        return response, 500
 
 @app.route('/api/duraklar/tum-veriler', methods=['GET'])
 def get_tum_veriler():
@@ -477,9 +524,13 @@ def get_tum_veriler():
                         'error': str(e)
                     })
         
-        return jsonify(sonuclar)
+        response = jsonify(sonuclar)
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        return response
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        response = jsonify({'success': False, 'error': str(e)})
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        return response, 500
 
 @app.route('/api/debug/<int:durak_id>', methods=['GET'])
 def debug_durak(durak_id):
