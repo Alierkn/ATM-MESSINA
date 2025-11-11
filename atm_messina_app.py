@@ -5,6 +5,8 @@ Durak URL'lerinden veri çekerek gelecek otobüsleri gösterir
 
 from flask import Flask, render_template, jsonify, request
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 import json
 import os
@@ -14,6 +16,21 @@ import time
 from typing import Dict, List, Optional
 
 app = Flask(__name__)
+
+# Retry stratejisi ile session oluştur
+def create_session():
+    """Retry mekanizmalı HTTP session oluştur"""
+    session = requests.Session()
+    retry_strategy = Retry(
+        total=3,
+        backoff_factor=2,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["GET"]
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    return session
 
 # Durak URL'lerini saklayacak dosya
 # Cloud deploy için persistent storage kullan
@@ -51,8 +68,18 @@ def fetch_durak_data(url: str) -> Dict:
             'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7'
         }
         
-        response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()
+        # Retry mekanizmalı session kullan
+        session = create_session()
+        
+        # Timeout'u artır (30 saniye)
+        try:
+            response = session.get(url, headers=headers, timeout=(10, 30))  # (connect timeout, read timeout)
+            response.raise_for_status()
+        except requests.exceptions.Timeout:
+            # Timeout durumunda daha fazla bekle ve tekrar dene
+            time.sleep(3)
+            response = session.get(url, headers=headers, timeout=(15, 45))
+            response.raise_for_status()
         
         # Encoding'i düzelt
         response.encoding = response.apparent_encoding or 'utf-8'
@@ -410,7 +437,14 @@ def debug_durak(durak_id):
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
-        response = requests.get(url, headers=headers, timeout=10)
+        session = create_session()
+        try:
+            response = session.get(url, headers=headers, timeout=(10, 30))
+            response.raise_for_status()
+        except requests.exceptions.Timeout:
+            time.sleep(3)
+            response = session.get(url, headers=headers, timeout=(15, 45))
+            response.raise_for_status()
         response.encoding = response.apparent_encoding or 'utf-8'
         soup = BeautifulSoup(response.content, 'html.parser')
         
