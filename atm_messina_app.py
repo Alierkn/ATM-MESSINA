@@ -353,6 +353,16 @@ def index():
     """Ana sayfa"""
     return render_template('atm_messina.html')
 
+@app.route('/health')
+@app.route('/ping')
+def health_check():
+    """Health check endpoint - Uptime monitoring için"""
+    return jsonify({
+        'status': 'ok',
+        'timestamp': datetime.now().isoformat(),
+        'service': 'ATM Messina Bot'
+    }), 200
+
 @app.route('/api/duraklar', methods=['GET'])
 def get_duraklar():
     """Tüm durakları getir"""
