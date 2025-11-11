@@ -15,14 +15,30 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
             background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            animation: gradientShift 20s ease infinite;
             min-height: 100vh;
             padding: 20px;
             color: #333;
             position: relative;
             overflow-x: hidden;
+        }
+
+        /* Modern glassmorphism arka plan efektleri */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(79, 172, 254, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
         }
 
         /* Mobil görünüm için responsive tasarım */
@@ -234,11 +250,16 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
-            border-radius: 25px;
-            padding: 40px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            padding: 50px 40px;
             margin-bottom: 30px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -262,15 +283,19 @@
 
         .header h1 {
             color: white;
-            font-size: 3em;
+            font-size: 3.2em;
             margin-bottom: 15px;
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            text-shadow: 
+                0 2px 20px rgba(0, 0, 0, 0.3),
+                0 0 40px rgba(255, 255, 255, 0.2);
             position: relative;
             z-index: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
         }
 
         .header h1::before {
@@ -293,13 +318,16 @@
         }
 
         .controls {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 25px;
-            padding: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            padding: 35px;
             margin-bottom: 30px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
         }
 
         .form-group {
@@ -308,44 +336,59 @@
 
         .form-group label {
             display: block;
-            margin-bottom: 10px;
-            color: #ff6b6b;
+            margin-bottom: 12px;
+            color: white;
             font-weight: 600;
             font-size: 1.1em;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
         .form-group input {
             width: 100%;
-            padding: 15px;
-            border: 3px solid #ffd93d;
-            border-radius: 15px;
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
             font-size: 1em;
-            transition: all 0.3s;
-            background: #fff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
             font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: #ff6b6b;
-            box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.2);
-            transform: scale(1.02);
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 
+                0 0 0 4px rgba(255, 255, 255, 0.3),
+                0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(0, 0, 0, 0.4);
         }
 
         .btn {
-            padding: 15px 35px;
+            padding: 16px 32px;
             border: none;
-            border-radius: 15px;
+            border-radius: 20px;
             font-size: 1em;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             margin-right: 10px;
             margin-top: 10px;
             font-family: 'Poppins', sans-serif;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 
+                0 8px 20px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 0.9em;
         }
 
         .btn::before {
@@ -367,43 +410,55 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
         .btn-primary:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 
+                0 12px 30px rgba(102, 126, 234, 0.5),
+                0 0 0 4px rgba(102, 126, 234, 0.2);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-2px) scale(1.01);
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #4ecdc4 0%, #45b7d1 100%);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
         }
 
         .btn-secondary:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(78, 205, 196, 0.4);
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 
+                0 12px 30px rgba(79, 172, 254, 0.5),
+                0 0 0 4px rgba(79, 172, 254, 0.2);
         }
 
         .btn-danger {
-            background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%);
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
         }
 
         .btn-danger:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.4);
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 
+                0 12px 30px rgba(240, 147, 251, 0.5),
+                0 0 0 4px rgba(240, 147, 251, 0.2);
         }
 
         .btn-success {
-            background: linear-gradient(135deg, #2ed573 0%, #1ecc5f 100%);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
         }
 
         .btn-success:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(46, 213, 115, 0.4);
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 
+                0 12px 30px rgba(79, 172, 254, 0.5),
+                0 0 0 4px rgba(79, 172, 254, 0.2);
         }
 
         .duraklar-list {
@@ -414,13 +469,16 @@
         }
 
         .durak-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: all 0.3s;
-            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 28px;
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
         }
@@ -436,20 +494,25 @@
         }
 
         .durak-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-            border-color: #ff6b6b;
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.3),
+                0 0 0 4px rgba(255, 255, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            border-color: rgba(255, 255, 255, 0.5);
         }
 
         .durak-card h3 {
-            color: #ff6b6b;
+            color: white;
             margin-bottom: 15px;
-            font-size: 1.4em;
+            font-size: 1.5em;
             position: relative;
             z-index: 1;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
         .durak-card h3::before {
@@ -458,10 +521,15 @@
         }
 
         .durak-card .url {
-            color: #666;
-            font-size: 0.9em;
-            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85em;
+            margin-bottom: 18px;
             word-break: break-all;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
         }
 
         .durak-card .actions {
@@ -471,25 +539,32 @@
         }
 
         .otobusler-container {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 25px;
-            padding: 35px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
             margin-top: 30px;
-            border: 2px solid rgba(255,255,255,0.3);
         }
 
         .otobusler-container h2 {
-            color: #ff6b6b;
-            margin-bottom: 25px;
-            font-size: 2.5em;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.8em;
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            text-shadow: 
+                0 2px 20px rgba(0, 0, 0, 0.3),
+                0 0 40px rgba(255, 255, 255, 0.2);
+            font-weight: 700;
+            letter-spacing: -1px;
         }
 
         .otobusler-container h2::before {
@@ -499,13 +574,18 @@
         }
 
         .otobus-item {
-            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
-            border-radius: 20px;
-            padding: 25px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-left: 4px solid rgba(255, 255, 255, 0.5);
+            border-radius: 25px;
+            padding: 28px;
             margin-bottom: 20px;
-            border-left: 6px solid #ff6b6b;
-            transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
             position: relative;
             overflow: hidden;
         }
@@ -522,17 +602,23 @@
         }
 
         .otobus-item:hover {
-            transform: translateX(10px) scale(1.02);
-            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
-            border-left-width: 8px;
+            transform: translateX(8px) scale(1.02);
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.3),
+                0 0 0 4px rgba(255, 255, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            border-left-width: 6px;
+            border-color: rgba(255, 255, 255, 0.6);
         }
 
         .otobus-item h4 {
-            color: #ff6b6b;
-            margin-bottom: 15px;
-            font-size: 1.4em;
+            color: white;
+            margin-bottom: 18px;
+            font-size: 1.5em;
             position: relative;
             z-index: 1;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
         .otobus-item .detay {
@@ -596,8 +682,12 @@
         /* Planlanmış Otobüs Animasyonu - Durakta Bekleme */
         .otobus-schedulato {
             animation: waitingAtStop 4s ease-in-out infinite;
-            border-left: 6px solid #ffd93d !important;
-            box-shadow: 0 5px 15px rgba(255, 217, 61, 0.3) !important;
+            border-left: 4px solid rgba(240, 147, 251, 0.8) !important;
+            background: rgba(240, 147, 251, 0.1) !important;
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.2),
+                0 0 15px rgba(240, 147, 251, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
         }
 
         @keyframes waitingAtStop {
@@ -711,63 +801,80 @@
         }
 
         .error {
-            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
-            color: #c62828;
-            padding: 20px;
-            border-radius: 15px;
+            background: rgba(245, 87, 108, 0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 20px;
             margin: 15px 0;
-            border-left: 6px solid #c62828;
-            box-shadow: 0 5px 15px rgba(198, 40, 40, 0.2);
+            border: 1px solid rgba(245, 87, 108, 0.4);
+            box-shadow: 
+                0 10px 30px rgba(245, 87, 108, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
         }
 
         .error::before {
             content: '⚠️';
-            font-size: 1.5em;
+            font-size: 1.8em;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
         }
 
         .success {
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-            color: #2e7d32;
-            padding: 20px;
-            border-radius: 15px;
+            background: rgba(79, 172, 254, 0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 20px;
             margin: 15px 0;
-            border-left: 6px solid #2e7d32;
-            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.2);
+            border: 1px solid rgba(79, 172, 254, 0.4);
+            box-shadow: 
+                0 10px 30px rgba(79, 172, 254, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
         }
 
         .success::before {
             content: '✅';
-            font-size: 1.5em;
+            font-size: 1.8em;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
         }
 
         .status-badge {
             display: inline-block;
-            padding: 8px 18px;
-            border-radius: 25px;
-            font-size: 0.9em;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.85em;
             font-weight: 700;
             margin-left: 15px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            box-shadow: 
+                0 4px 15px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            backdrop-filter: blur(10px);
         }
 
         .status-success {
-            background: linear-gradient(135deg, #2ed573 0%, #1ecc5f 100%);
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.9) 0%, rgba(0, 242, 254, 0.9) 100%);
             color: white;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
         }
 
         .status-error {
-            background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%);
+            background: linear-gradient(135deg, rgba(245, 87, 108, 0.9) 0%, rgba(240, 147, 251, 0.9) 100%);
             color: white;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
         }
 
         .auto-refresh {
@@ -1066,8 +1173,8 @@
                         
                         sortedOtobusler.forEach(otobus => {
                             const tipBadge = otobus.tip === 'Tempo Reale' 
-                                ? '<span style="display: inline-block; padding: 5px 12px; background: linear-gradient(135deg, #2ed573 0%, #1ecc5f 100%); color: white; border-radius: 20px; font-size: 0.85em; font-weight: 600; margin-top: 8px; box-shadow: 0 3px 10px rgba(46, 213, 115, 0.3);">🟢 Gerçek Zamanlı</span>'
-                                : '<span style="display: inline-block; padding: 5px 12px; background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%); color: white; border-radius: 20px; font-size: 0.85em; font-weight: 600; margin-top: 8px; box-shadow: 0 3px 10px rgba(149, 165, 166, 0.3);">📅 Planlanmış</span>';
+                                ? '<span style="display: inline-block; padding: 8px 16px; background: linear-gradient(135deg, rgba(79, 172, 254, 0.9) 0%, rgba(0, 242, 254, 0.9) 100%); color: white; border-radius: 25px; font-size: 0.8em; font-weight: 700; margin-top: 10px; box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3); text-transform: uppercase; letter-spacing: 0.5px; backdrop-filter: blur(10px);">🟢 Gerçek Zamanlı</span>'
+                                : '<span style="display: inline-block; padding: 8px 16px; background: linear-gradient(135deg, rgba(240, 147, 251, 0.9) 0%, rgba(245, 87, 108, 0.9) 100%); color: white; border-radius: 25px; font-size: 0.8em; font-weight: 700; margin-top: 10px; box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3); text-transform: uppercase; letter-spacing: 0.5px; backdrop-filter: blur(10px);">📅 Planlanmış</span>';
                             
                             const busIcon = otobus.tip === 'Tempo Reale' ? '🚌' : '🚏';
                             
@@ -1075,18 +1182,18 @@
                             const animClass = isTempoReale ? 'otobus-tempo-reale' : 'otobus-schedulato';
                             
                             html += `
-                                <div class="detay ${animClass} otobus-kart-mobil" style="display: flex; flex-direction: column; padding: 15px; background: linear-gradient(135deg, #ffffff 0%, ${isTempoReale ? '#f0fff4' : '#fff5f5'} 100%); border-radius: 15px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 2px solid ${isTempoReale ? '#2ed573' : '#ffd93d'}; position: relative; overflow: hidden; transition: all 0.3s;">
-                                    <div style="flex: 1; position: relative; z-index: 1; margin-bottom: 15px;">
-                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                                            <span class="bus-icon" style="font-size: 2em;">${isTempoReale ? '🚌' : '🚏'}</span>
-                                            <strong style="color: ${isTempoReale ? '#2ed573' : '#ff6b6b'}; font-size: 1.5em; font-weight: 700;">Hat ${otobus.hat || 'N/A'}</strong>
+                                <div class="detay ${animClass} otobus-kart-mobil" style="display: flex; flex-direction: column; padding: 20px; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 25px; margin-bottom: 20px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.4); position: relative; overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);">
+                                    <div style="flex: 1; position: relative; z-index: 1; margin-bottom: 18px;">
+                                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                            <span class="bus-icon" style="font-size: 2.2em; filter: drop-shadow(0 2px 10px rgba(0,0,0,0.2));">${isTempoReale ? '🚌' : '🚏'}</span>
+                                            <strong style="color: white; font-size: 1.6em; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">Hat ${otobus.hat || 'N/A'}</strong>
                                         </div>
-                                        <div style="color: #555; margin: 8px 0; font-size: 1.1em; font-weight: 500;">📍 ${otobus.varis || 'Bilinmiyor'}</div>
+                                        <div style="color: rgba(255,255,255,0.9); margin: 10px 0; font-size: 1.15em; font-weight: 500; text-shadow: 0 1px 5px rgba(0,0,0,0.2);">📍 ${otobus.varis || 'Bilinmiyor'}</div>
                                         ${tipBadge}
                                     </div>
-                                    <div class="saat-kutusu" style="text-align: center; padding: 15px 20px; background: linear-gradient(135deg, ${isTempoReale ? '#2ed573' : '#ff6b6b'} 0%, ${isTempoReale ? '#1ecc5f' : '#ffa500'} 100%); border-radius: 15px; box-shadow: 0 5px 15px rgba(${isTempoReale ? '46, 213, 115' : '255, 107, 107'}, 0.3); position: relative; z-index: 1; width: 100%;">
-                                        <div style="font-size: 0.9em; color: rgba(255,255,255,0.9); margin-bottom: 5px; font-weight: 500;">${isTempoReale ? '🚌 Geliyor' : '⏰ Varış'}</div>
-                                        <div style="font-size: 2em; font-weight: 700; color: white; text-shadow: 2px 2px 5px rgba(0,0,0,0.2);">${otobus.saat || 'N/A'}</div>
+                                    <div class="saat-kutusu" style="text-align: center; padding: 18px 24px; background: linear-gradient(135deg, ${isTempoReale ? 'rgba(79, 172, 254, 0.9)' : 'rgba(240, 147, 251, 0.9)'} 0%, ${isTempoReale ? 'rgba(0, 242, 254, 0.9)' : 'rgba(245, 87, 108, 0.9)'} 100%); border-radius: 20px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3); position: relative; z-index: 1; width: 100%; backdrop-filter: blur(10px);">
+                                        <div style="font-size: 0.85em; color: rgba(255,255,255,0.95); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">${isTempoReale ? '🚌 Geliyor' : '⏰ Varış'}</div>
+                                        <div style="font-size: 2.2em; font-weight: 700; color: white; text-shadow: 0 2px 15px rgba(0,0,0,0.3); letter-spacing: 2px;">${otobus.saat || 'N/A'}</div>
                                     </div>
                                 </div>
                             `;
