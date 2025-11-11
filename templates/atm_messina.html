@@ -1336,6 +1336,115 @@
                 messageDiv.remove();
             }, 3000);
         }
+
+        // Durak düzenleme
+        async function durakDuzenle(durakId) {
+            const durak = tumDuraklar.find(d => d.id === durakId);
+            if (!durak) return;
+
+            const yeniAd = prompt('Yeni durak adı:', durak.ad);
+            if (yeniAd === null) return;
+
+            const yeniUrl = prompt('Yeni URL:', durak.url);
+            if (yeniUrl === null) return;
+
+            const yeniNot = prompt('Not (boş bırakabilirsiniz):', durak.not || '');
+            if (yeniNot === null) return;
+
+            try {
+                const response = await fetch(`/api/duraklar/${durakId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ ad: yeniAd, url: yeniUrl, not: yeniNot })
+                });
+
+                if (response.ok) {
+                    duraklariYukle();
+                    showMessage('Durak güncellendi!', 'success');
+                } else {
+                    showMessage('Durak güncellenirken hata oluştu!', 'error');
+                }
+            } catch (error) {
+                showMessage('Hata: ' + error.message, 'error');
+            }
+        }
+
+        // Favori toggle
+        async function toggleFavori(durakId) {
+            try {
+                const response = await fetch(`/api/duraklar/${durakId}/favori`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    duraklariYukle();
+                }
+            } catch (error) {
+                console.error('Favori hatası:', error);
+            }
+        }
+
+        // Karanlık mod
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            
+            const icon = document.getElementById('dark-mode-icon');
+            const text = document.getElementById('dark-mode-text');
+            if (icon && text) {
+                if (isDark) {
+                    icon.textContent = '☀️';
+                    text.textContent = 'Aydınlık Mod';
+                } else {
+                    icon.textContent = '🌙';
+                    text.textContent = 'Karanlık Mod';
+                }
+            }
+        }
+
+        // Sayfa yüklendiğinde karanlık modu kontrol et
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            const icon = document.getElementById('dark-mode-icon');
+            const text = document.getElementById('dark-mode-text');
+            if (icon && text) {
+                icon.textContent = '☀️';
+                text.textContent = 'Aydınlık Mod';
+            }
+        }
+
+        // Yaklaşan otobüs bildirimleri için kalan süre hesaplama
+        function kalanSureHesapla(saat) {
+            if (!saat || saat === 'N/A') return 'Bilinmiyor';
+            
+            try {
+                const [saatStr, dakikaStr] = saat.split(':');
+                const otobusSaati = new Date();
+                otobusSaati.setHours(parseInt(saatStr), parseInt(dakikaStr), 0, 0);
+                
+                // Eğer saat geçmişse, yarın için ayarla
+                if (otobusSaati < new Date()) {
+                    otobusSaati.setDate(otobusSaati.getDate() + 1);
+                }
+                
+                const simdi = new Date();
+                const fark = otobusSaati - simdi;
+                const dakika = Math.floor(fark / 60000);
+                const saatKalan = Math.floor(dakika / 60);
+                const dakikaKalan = dakika % 60;
+                
+                if (dakika < 0) return 'Geçti';
+                if (dakika < 5) return `${dakika} dk (Yaklaşıyor!)`;
+                if (saatKalan > 0) return `${saatKalan}s ${dakikaKalan}dk`;
+                return `${dakika} dk`;
+            } catch (e) {
+                return 'Hesaplanamadı';
+            }
+        }
     </script>
 </body>
 </html>
