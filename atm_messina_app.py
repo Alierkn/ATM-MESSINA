@@ -468,6 +468,8 @@ def add_durak():
             'id': yeni_id,
             'ad': data.get('ad', 'İsimsiz Durak'),
             'url': data.get('url', ''),
+            'not': data.get('not', ''),
+            'favori': False,
             'eklenme_tarihi': datetime.now().isoformat()
         }
         
@@ -495,6 +497,67 @@ def delete_durak(durak_id):
         duraklar = [d for d in duraklar if d.get('id') != durak_id]
         save_duraklar(duraklar)
         response = jsonify({'success': True})
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        return response
+    except Exception as e:
+        response = jsonify({'success': False, 'error': str(e)})
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        return response, 500
+
+@app.route('/api/duraklar/<int:durak_id>', methods=['PUT'])
+def update_durak(durak_id):
+    """Durak güncelle"""
+    try:
+        if not request.is_json:
+            response = jsonify({'success': False, 'error': 'Content-Type application/json olmalı'})
+            response.headers['Content-Type'] = 'application/json; charset=utf-8'
+            return response, 400
+        
+        data = request.get_json() or {}
+        duraklar = load_duraklar()
+        
+        durak = next((d for d in duraklar if d.get('id') == durak_id), None)
+        if not durak:
+            response = jsonify({'success': False, 'error': 'Durak bulunamadı'})
+            response.headers['Content-Type'] = 'application/json; charset=utf-8'
+            return response, 404
+        
+        # Güncelle
+        if 'ad' in data:
+            durak['ad'] = data['ad']
+        if 'url' in data:
+            durak['url'] = data['url']
+        if 'not' in data:
+            durak['not'] = data['not']
+        durak['guncelleme_tarihi'] = datetime.now().isoformat()
+        
+        save_duraklar(duraklar)
+        
+        response = jsonify(durak)
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        return response
+    except Exception as e:
+        response = jsonify({'success': False, 'error': str(e)})
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        return response, 500
+
+@app.route('/api/duraklar/<int:durak_id>/favori', methods=['POST'])
+def toggle_favori(durak_id):
+    """Favori durumu değiştir"""
+    try:
+        duraklar = load_duraklar()
+        durak = next((d for d in duraklar if d.get('id') == durak_id), None)
+        
+        if not durak:
+            response = jsonify({'success': False, 'error': 'Durak bulunamadı'})
+            response.headers['Content-Type'] = 'application/json; charset=utf-8'
+            return response, 404
+        
+        # Favori durumunu toggle et
+        durak['favori'] = not durak.get('favori', False)
+        save_duraklar(duraklar)
+        
+        response = jsonify({'success': True, 'favori': durak['favori']})
         response.headers['Content-Type'] = 'application/json; charset=utf-8'
         return response
     except Exception as e:

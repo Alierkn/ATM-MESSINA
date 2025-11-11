@@ -894,6 +894,48 @@
             font-size: 0.9em;
             margin-top: 10px;
         }
+
+        /* Karanlık mod */
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #1a1a2e 75%, #16213e 100%);
+        }
+
+        body.dark-mode .header,
+        body.dark-mode .controls,
+        body.dark-mode .durak-card,
+        body.dark-mode .otobusler-container,
+        body.dark-mode .otobus-item {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .form-group input {
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        body.dark-mode .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Kalan süre badge */
+        .kalan-sure {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(79, 172, 254, 0.3);
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .kalan-sure.yaklasiyor {
+            background: rgba(245, 87, 108, 0.5);
+            animation: pulse 1s ease-in-out infinite;
+        }
     </style>
 </head>
 <body>
@@ -904,9 +946,21 @@
         </div>
 
         <div class="controls">
-            <h2 style="color: #ff6b6b; margin-bottom: 25px; font-size: 1.8em; display: flex; align-items: center; gap: 10px;">
-                <span>➕</span> Yeni Durak Ekle
-            </h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <h2 style="color: white; margin: 0; font-size: 1.8em; display: flex; align-items: center; gap: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+                    <span>➕</span> Yeni Durak Ekle
+                </h2>
+                <button class="btn btn-secondary" onclick="toggleDarkMode()" style="font-size: 1.2em; padding: 10px 20px;">
+                    <span id="dark-mode-icon">🌙</span> <span id="dark-mode-text">Karanlık Mod</span>
+                </button>
+            </div>
+            
+            <!-- Arama kutusu -->
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="durak-arama">🔍 Durak Ara</label>
+                <input type="text" id="durak-arama" placeholder="Durak adı veya URL ile ara..." onkeyup="durakAra()" style="width: 100%;">
+            </div>
+            
             <div class="form-group">
                 <label for="durak-ad">Durak Adı</label>
                 <input type="text" id="durak-ad" placeholder="Örn: Piazza Duomo">
@@ -914,6 +968,10 @@
             <div class="form-group">
                 <label for="durak-url">Durak URL'si</label>
                 <input type="text" id="durak-url" placeholder="https://...">
+            </div>
+            <div class="form-group">
+                <label for="durak-not">Not (Opsiyonel)</label>
+                <input type="text" id="durak-not" placeholder="Örn: Evden yakın, sabah 8'de kullanıyorum">
             </div>
             <button class="btn btn-primary" onclick="durakEkle()">Durak Ekle</button>
             <button class="btn btn-success" onclick="tumVerileriCek()">Tüm Durakları Yenile</button>
@@ -981,25 +1039,51 @@
             }
         }
 
+        let tumDuraklar = []; // Tüm duraklar (filtreleme için)
+        let aramaMetni = '';
+
         function duraklariGoster(duraklar) {
             const container = document.getElementById('duraklar-container');
+            tumDuraklar = duraklar; // Tüm durakları sakla
             
-            if (duraklar.length === 0) {
-                container.innerHTML = '<div class="success">Henüz durak eklenmemiş. Yukarıdan yeni durak ekleyebilirsiniz.</div>';
+            // Filtreleme uygula
+            let filtrelenmisDuraklar = duraklar;
+            if (aramaMetni) {
+                const arama = aramaMetni.toLowerCase();
+                filtrelenmisDuraklar = duraklar.filter(d => 
+                    d.ad.toLowerCase().includes(arama) || 
+                    d.url.toLowerCase().includes(arama) ||
+                    (d.not && d.not.toLowerCase().includes(arama))
+                );
+            }
+            
+            if (filtrelenmisDuraklar.length === 0) {
+                if (aramaMetni) {
+                    container.innerHTML = '<div class="success">Arama sonucu bulunamadı.</div>';
+                } else {
+                    container.innerHTML = '<div class="success">Henüz durak eklenmemiş. Yukarıdan yeni durak ekleyebilirsiniz.</div>';
+                }
                 return;
             }
 
             container.innerHTML = '<div class="duraklar-list"></div>';
             const list = container.querySelector('.duraklar-list');
 
-            duraklar.forEach(durak => {
+            filtrelenmisDuraklar.forEach(durak => {
                 const card = document.createElement('div');
                 card.className = 'durak-card';
+                const favoriIcon = durak.favori ? '⭐' : '☆';
+                const notGoster = durak.not ? `<div style="color: rgba(255,255,255,0.7); font-size: 0.9em; margin-top: 8px; font-style: italic;">📝 ${durak.not}</div>` : '';
                 card.innerHTML = `
-                    <h3>${durak.ad}</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <h3>${durak.ad}</h3>
+                        <button onclick="toggleFavori(${durak.id})" style="background: none; border: none; font-size: 1.5em; cursor: pointer; padding: 5px;">${favoriIcon}</button>
+                    </div>
                     <div class="url">${durak.url}</div>
+                    ${notGoster}
                     <div class="actions">
                         <button class="btn btn-primary" onclick="durakVerisiCek(${durak.id})">Otobüsleri Göster</button>
+                        <button class="btn btn-secondary" onclick="durakDuzenle(${durak.id})">Düzenle</button>
                         <button class="btn btn-danger" onclick="durakSil(${durak.id})">Sil</button>
                     </div>
                 `;
@@ -1007,9 +1091,15 @@
             });
         }
 
+        function durakAra() {
+            aramaMetni = document.getElementById('durak-arama').value;
+            duraklariGoster(tumDuraklar);
+        }
+
         async function durakEkle() {
             const ad = document.getElementById('durak-ad').value.trim();
             const url = document.getElementById('durak-url').value.trim();
+            const not = document.getElementById('durak-not').value.trim();
 
             if (!ad || !url) {
                 alert('Lütfen durak adı ve URL\'sini girin!');
@@ -1023,7 +1113,7 @@
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ ad, url })
+                    body: JSON.stringify({ ad, url, not })
                 });
 
                 const contentType = response.headers.get('content-type');
@@ -1038,6 +1128,7 @@
                 if (response.ok || response.status === 201) {
                     document.getElementById('durak-ad').value = '';
                     document.getElementById('durak-url').value = '';
+                    document.getElementById('durak-not').value = '';
                     duraklariYukle();
                     showMessage('Durak başarıyla eklendi!', 'success');
                 } else {
@@ -1194,6 +1285,7 @@
                                     <div class="saat-kutusu" style="text-align: center; padding: 18px 24px; background: linear-gradient(135deg, ${isTempoReale ? 'rgba(79, 172, 254, 0.9)' : 'rgba(240, 147, 251, 0.9)'} 0%, ${isTempoReale ? 'rgba(0, 242, 254, 0.9)' : 'rgba(245, 87, 108, 0.9)'} 100%); border-radius: 20px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3); position: relative; z-index: 1; width: 100%; backdrop-filter: blur(10px);">
                                         <div style="font-size: 0.85em; color: rgba(255,255,255,0.95); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">${isTempoReale ? '🚌 Geliyor' : '⏰ Varış'}</div>
                                         <div style="font-size: 2.2em; font-weight: 700; color: white; text-shadow: 0 2px 15px rgba(0,0,0,0.3); letter-spacing: 2px;">${otobus.saat || 'N/A'}</div>
+                                        <div class="kalan-sure ${kalanSureHesapla(otobus.saat).includes('Yaklaşıyor') ? 'yaklasiyor' : ''}" style="margin-top: 8px;">⏱️ ${kalanSureHesapla(otobus.saat)}</div>
                                     </div>
                                 </div>
                             `;
