@@ -841,8 +841,32 @@
         async function duraklariYukle() {
             try {
                 const response = await fetch('/api/duraklar');
+                
+                // Content-Type kontrolü
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('JSON beklenirken HTML geldi:', text.substring(0, 200));
+                    throw new Error('Sunucu JSON yerine HTML döndürdü');
+                }
+                
                 const duraklar = await response.json();
-                duraklariGoster(duraklar);
+                
+                // Eğer hata objesi ise
+                if (duraklar.error) {
+                    throw new Error(duraklar.error);
+                }
+                
+                // Eğer duraklar array değilse
+                if (!Array.isArray(duraklar)) {
+                    if (duraklar.duraklar) {
+                        duraklariGoster(duraklar.duraklar);
+                    } else {
+                        duraklariGoster([]);
+                    }
+                } else {
+                    duraklariGoster(duraklar);
+                }
             } catch (error) {
                 console.error('Hata:', error);
                 document.getElementById('duraklar-container').innerHTML = 
@@ -889,18 +913,28 @@
                 const response = await fetch('/api/duraklar', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({ ad, url })
                 });
 
-                if (response.ok) {
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('JSON beklenirken HTML geldi:', text.substring(0, 200));
+                    throw new Error('Sunucu JSON yerine HTML döndürdü');
+                }
+
+                const data = await response.json();
+
+                if (response.ok || response.status === 201) {
                     document.getElementById('durak-ad').value = '';
                     document.getElementById('durak-url').value = '';
                     duraklariYukle();
                     showMessage('Durak başarıyla eklendi!', 'success');
                 } else {
-                    showMessage('Durak eklenirken hata oluştu!', 'error');
+                    showMessage('Durak eklenirken hata oluştu: ' + (data.error || 'Bilinmeyen hata'), 'error');
                 }
             } catch (error) {
                 console.error('Hata:', error);
@@ -938,10 +972,22 @@
             list.innerHTML = '<div class="loading"><div class="spinner"></div><p>Otobüs bilgileri çekiliyor...</p></div>';
 
             try {
-                const response = await fetch(`/api/duraklar/${durakId}/veri`);
+                const response = await fetch(`/api/duraklar/${durakId}/veri`, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('JSON beklenirken HTML geldi:', text.substring(0, 200));
+                    throw new Error('Sunucu JSON yerine HTML döndürdü');
+                }
+
                 const data = await response.json();
 
-                if (data.success) {
+                if (data.success !== false) {
                     otobusleriGoster([data]);
                 } else {
                     list.innerHTML = `<div class="error">Hata: ${data.error || 'Bilinmeyen hata'}</div>`;
@@ -960,11 +1006,27 @@
             list.innerHTML = '<div class="loading"><div class="spinner"></div><p>Tüm durakların verileri çekiliyor...</p></div>';
 
             try {
-                const response = await fetch('/api/duraklar/tum-veriler');
+                const response = await fetch('/api/duraklar/tum-veriler', {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('JSON beklenirken HTML geldi:', text.substring(0, 200));
+                    throw new Error('Sunucu JSON yerine HTML döndürdü');
+                }
+
                 const data = await response.json();
 
-                otobusleriGoster(data);
-                allOtobusler = data;
+                if (Array.isArray(data)) {
+                    otobusleriGoster(data);
+                    allOtobusler = data;
+                } else {
+                    throw new Error(data.error || 'Beklenmeyen veri formatı');
+                }
             } catch (error) {
                 console.error('Hata:', error);
                 list.innerHTML = `<div class="error">Bağlantı hatası: ${error.message}</div>`;

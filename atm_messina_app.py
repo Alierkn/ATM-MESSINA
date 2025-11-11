@@ -4,6 +4,7 @@ Durak URL'lerinden veri çekerek gelecek otobüsleri gösterir
 """
 
 from flask import Flask, render_template, jsonify, request
+from flask_cors import CORS
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
@@ -16,6 +17,27 @@ import time
 from typing import Dict, List, Optional
 
 app = Flask(__name__)
+# CORS ekle - mobil ve farklı domain'lerden erişim için
+CORS(app)
+
+# Error handler'lar - API endpoint'leri için JSON döndür
+@app.errorhandler(404)
+def not_found(error):
+    if request.path.startswith('/api/'):
+        return jsonify({'success': False, 'error': 'Endpoint bulunamadı'}), 404
+    return error
+
+@app.errorhandler(500)
+def internal_error(error):
+    if request.path.startswith('/api/'):
+        return jsonify({'success': False, 'error': 'Sunucu hatası'}), 500
+    return error
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    if request.path.startswith('/api/'):
+        return jsonify({'success': False, 'error': str(e)}), 500
+    return e
 
 # Retry stratejisi ile session oluştur
 def create_session():
@@ -366,69 +388,98 @@ def health_check():
 @app.route('/api/duraklar', methods=['GET'])
 def get_duraklar():
     """Tüm durakları getir"""
-    return jsonify(load_duraklar())
+    try:
+        duraklar = load_duraklar()
+        return jsonify(duraklar)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e), 'duraklar': []}), 500
 
 @app.route('/api/duraklar', methods=['POST'])
 def add_durak():
     """Yeni durak ekle"""
-    data = request.json
-    duraklar = load_duraklar()
-    
-    yeni_durak = {
-        'id': len(duraklar) + 1,
-        'ad': data.get('ad', 'İsimsiz Durak'),
-        'url': data.get('url', ''),
-        'eklenme_tarihi': datetime.now().isoformat()
-    }
-    
-    duraklar.append(yeni_durak)
-    save_duraklar(duraklar)
-    
-    return jsonify(yeni_durak), 201
+    try:
+        data = request.get_json() or {}
+        
+        if not data.get('ad') or not data.get('url'):
+            return jsonify({'success': False, 'error': 'Durak adı ve URL gerekli'}), 400
+        
+        duraklar = load_duraklar()
+        
+        yeni_durak = {
+            'id': len(duraklar) + 1,
+            'ad': data.get('ad', 'İsimsiz Durak'),
+            'url': data.get('url', ''),
+            'eklenme_tarihi': datetime.now().isoformat()
+        }
+        
+        duraklar.append(yeni_durak)
+        save_duraklar(duraklar)
+        
+        return jsonify(yeni_durak), 201
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/duraklar/<int:durak_id>', methods=['DELETE'])
 def delete_durak(durak_id):
     """Durak sil"""
-    duraklar = load_duraklar()
-    duraklar = [d for d in duraklar if d.get('id') != durak_id]
-    save_duraklar(duraklar)
-    return jsonify({'success': True})
+    try:
+        duraklar = load_duraklar()
+        duraklar = [d for d in duraklar if d.get('id') != durak_id]
+        save_duraklar(duraklar)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/duraklar/<int:durak_id>/veri', methods=['GET'])
 def get_durak_veri(durak_id):
     """Belirli bir durağın verisini çek"""
-    duraklar = load_duraklar()
-    durak = next((d for d in duraklar if d.get('id') == durak_id), None)
-    
-    if not durak:
-        return jsonify({'success': False, 'error': 'Durak bulunamadı'}), 404
-    
-    url = durak.get('url')
-    if not url:
-        return jsonify({'success': False, 'error': 'Durak URL\'si yok'}), 400
-    
-    veri = fetch_durak_data(url)
-    veri['durak_adi'] = durak.get('ad', 'Bilinmeyen')
-    veri['durak_id'] = durak_id
-    
-    return jsonify(veri)
+    try:
+        duraklar = load_duraklar()
+        durak = next((d for d in duraklar if d.get('id') == durak_id), None)
+        
+        if not durak:
+            return jsonify({'success': False, 'error': 'Durak bulunamadı'}), 404
+        
+        url = durak.get('url')
+        if not url:
+            return jsonify({'success': False, 'error': 'Durak URL\'si yok'}), 400
+        
+        veri = fetch_durak_data(url)
+        veri['durak_adi'] = durak.get('ad', 'Bilinmeyen')
+        veri['durak_id'] = durak_id
+        
+        return jsonify(veri)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/duraklar/tum-veriler', methods=['GET'])
 def get_tum_veriler():
     """Tüm durakların verilerini çek"""
-    duraklar = load_duraklar()
-    sonuclar = []
-    
-    for durak in duraklar:
-        url = durak.get('url')
-        if url:
-            veri = fetch_durak_data(url)
-            veri['durak_adi'] = durak.get('ad', 'Bilinmeyen')
-            veri['durak_id'] = durak.get('id')
-            sonuclar.append(veri)
-            time.sleep(0.5)  # Rate limiting
-    
-    return jsonify(sonuclar)
+    try:
+        duraklar = load_duraklar()
+        sonuclar = []
+        
+        for durak in duraklar:
+            url = durak.get('url')
+            if url:
+                try:
+                    veri = fetch_durak_data(url)
+                    veri['durak_adi'] = durak.get('ad', 'Bilinmeyen')
+                    veri['durak_id'] = durak.get('id')
+                    sonuclar.append(veri)
+                    time.sleep(0.5)  # Rate limiting
+                except Exception as e:
+                    # Bir durakta hata olsa bile diğerlerini çekmeye devam et
+                    sonuclar.append({
+                        'success': False,
+                        'durak_adi': durak.get('ad', 'Bilinmeyen'),
+                        'durak_id': durak.get('id'),
+                        'error': str(e)
+                    })
+        
+        return jsonify(sonuclar)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/debug/<int:durak_id>', methods=['GET'])
 def debug_durak(durak_id):
